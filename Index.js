@@ -51,10 +51,28 @@ const tags_model = require("./notes_schema/tags");
 // get_notes_by_tag_color
 // get_notes_in_trash
 
+// default failed message
+const error_msg = {
+  message: "failed",
+};
+
+function requestHandler(req) {
+  // checking if req have a owner
+  let owner = req.body.owner;
+  if (owner == null || len(owner) == 0) {
+    return false;
+  }
+  return true;
+}
+
 // add_note
 app.post("/add_note", async (req, res) => {
   try {
+    if (requestHandler(req.body) == false) {
+      return error_msg;
+    }
     const new_note = {
+      owner: owner,
       title: "default_title",
       description: "default_description",
       is_favorite: false,
@@ -76,6 +94,9 @@ app.post("/add_note", async (req, res) => {
 // change_title
 app.post("/change_title", async (req, res) => {
   console.log(req.body);
+  if (requestHandler(req.body) == false) {
+    return error_msg;
+  }
   const updated_note = await notes_model.findById(req.body.id);
   updated_note["title"] = req.body.title;
   const updated_note_model = new notes_model(updated_note);
@@ -86,6 +107,9 @@ app.post("/change_title", async (req, res) => {
 // change_description
 app.post("/change_description", async (req, res) => {
   console.log(req.body);
+  if (requestHandler(req.body) == false) {
+    return error_msg;
+  }
   const updated_note = await notes_model.findById(req.body.id);
   updated_note["description"] = req.body.description;
   const updated_note_model = new notes_model(updated_note);
@@ -95,6 +119,9 @@ app.post("/change_description", async (req, res) => {
 
 // update_favorite
 app.post("/update_favorite", async (req, res) => {
+  if (requestHandler(req.body) == false) {
+    return error_msg;
+  }
   const updated_note = await notes_model.findById(req.body.id);
   updated_note["is_favorite"] = !updated_note["is_favorite"];
   const updated_note_model = new notes_model(updated_note);
@@ -103,11 +130,17 @@ app.post("/update_favorite", async (req, res) => {
 });
 // get_favorite_notes
 app.post("/get_favorite_notes", async (req, res) => {
+  if (requestHandler(req.body) == false) {
+    return error_msg;
+  }
   const favorite_notes = await notes_model.find({ is_favorite: true });
   res.send(favorite_notes);
 });
 // update_is_pinned
 app.post("/update_is_pinned", async (req, res) => {
+  if (requestHandler(req.body) == false) {
+    return error_msg;
+  }
   const updated_note = await notes_model.findById(req.body.id);
   updated_note["is_pinned"] = !updated_note["is_pinned"];
   const updated_note_model = new notes_model(updated_note);
@@ -116,6 +149,9 @@ app.post("/update_is_pinned", async (req, res) => {
 });
 // add_tag_name
 app.post("/add_tag_name", async (req, res) => {
+  if (requestHandler(req.body) == false) {
+    return error_msg;
+  }
   const updated_note = await notes_model.findById(req.body.id);
   updated_note["tag_name"].push(req.body.tag);
   const updated_note_model = new notes_model(updated_note);
@@ -129,6 +165,9 @@ app.post("/add_tag_name", async (req, res) => {
 });
 // remove_tag_name
 app.post("/remove_tag_name", async (req, res) => {
+  if (requestHandler(req.body) == false) {
+    return error_msg;
+  }
   const updated_note = await notes_model.findById(req.body.id);
   updated_note["tag_name"] = updated_note["tag_name"].filter((val, index) => {
     if (val == req.body.tag) {
@@ -148,6 +187,9 @@ app.post("/remove_tag_name", async (req, res) => {
 
 // update_tag_color
 app.post("/update_tag_color", async (req, res) => {
+  if (requestHandler(req.body) == false) {
+    return error_msg;
+  }
   const updated_note = await notes_model.findById(req.body.id);
   updated_note["tag_color"] = req.body.tag_color;
   const updated_note_model = new notes_model(updated_note);
@@ -157,6 +199,9 @@ app.post("/update_tag_color", async (req, res) => {
 
 // remove_tag_color
 app.post("/remove_tag_color", async (req, res) => {
+  if (requestHandler(req.body) == false) {
+    return error_msg;
+  }
   const updated_note = await notes_model.findById(req.body.id);
   updated_note["tag_color"] = null;
   const updated_note_model = new notes_model(updated_note);
@@ -166,6 +211,9 @@ app.post("/remove_tag_color", async (req, res) => {
 
 // update_in_trash
 app.post("/update_in_trash", async (req, res) => {
+  if (requestHandler(req.body) == false) {
+    return error_msg;
+  }
   const updated_note = await notes_model.findById(req.body.id);
   updated_note["in_trash"] = !updated_note["in_trash"];
   const updated_note_model = new notes_model(updated_note);
@@ -174,6 +222,9 @@ app.post("/update_in_trash", async (req, res) => {
 });
 // get_notes_by_tag_name
 app.post("/get_notes_by_tag_name", async (req, res) => {
+  if (requestHandler(req.body) == false) {
+    return error_msg;
+  }
   const note_ids = await tags_model.find({ tag_name: req.body.tag });
   const notes_by_tag = await get_notes_by_user_id(note_ids);
   console.log("notes_by_tag", notes_by_tag);
@@ -181,6 +232,9 @@ app.post("/get_notes_by_tag_name", async (req, res) => {
 });
 
 async function get_notes_by_user_id(note_ids) {
+  if (requestHandler(req.body) == false) {
+    return error_msg;
+  }
   let notes = await Promise.all(
     note_ids.map(async (val, index) => {
       console.log(val["note_id"]);
@@ -194,6 +248,9 @@ async function get_notes_by_user_id(note_ids) {
 
 // get_notes_by_tag_color
 app.post("/get_notes_by_tag_color", async (req, res) => {
+  if (requestHandler(req.body) == false) {
+    return error_msg;
+  }
   const notes_by_tag_color = await notes_model.find({
     tag_color: req.body.tag_color,
   });
@@ -202,6 +259,9 @@ app.post("/get_notes_by_tag_color", async (req, res) => {
 
 // get_notes_in_trash
 app.post("/get_notes_in_trash", async (req, res) => {
+  if (requestHandler(req.body) == false) {
+    return error_msg;
+  }
   const notes_by_tag_color = await notes_model.find({
     in_trash: true,
   });
