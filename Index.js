@@ -133,7 +133,10 @@ app.post("/get_favorite_notes", async (req, res) => {
   if (requestHandler(req.body) == false) {
     return error_msg;
   }
-  const favorite_notes = await notes_model.find({ is_favorite: true });
+  const favorite_notes = await notes_model.find({
+    owner: req.body.owner,
+    is_favorite: true,
+  });
   res.send(favorite_notes);
 });
 // update_is_pinned
@@ -252,6 +255,7 @@ app.post("/get_notes_by_tag_color", async (req, res) => {
     return error_msg;
   }
   const notes_by_tag_color = await notes_model.find({
+    owner: req.body.owner,
     tag_color: req.body.tag_color,
   });
   res.send(notes_by_tag_color);
@@ -263,6 +267,7 @@ app.post("/get_notes_in_trash", async (req, res) => {
     return error_msg;
   }
   const notes_by_tag_color = await notes_model.find({
+    owner: req.body.owner,
     in_trash: true,
   });
   res.send(notes_by_tag_color);
